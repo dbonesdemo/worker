@@ -7,22 +7,25 @@ dotnet: 1.0.0-preview2-003121
 services:
   - docker
 
-before_script:
+install:
   - cd $TRAVIS_BUILD_DIR
   - cd src
-  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - dotnet restore
+
+before_script:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+script:
+  - cd src
+  - dotnet publish -c Release -o ./worker ./ 
 
 after_success:
   - cd $TRAVIS_BUILD_DIR
-  - cd src
-  - dotnet build
-  - cd ..
   - docker build -t "davecss/worker:latest" -t "davecss/worker:1.0.$TRAVIS_BUILD_NUMBER" .
 
 deploy:
   provider: script
   skip_cleanup: true
-  script: docker push davecss/result
+  script: docker push davecss/worker
   on:
     branch: master

@@ -1,0 +1,28 @@
+sudo: required
+
+language: csharp
+mono: none
+dotnet: 1.0.0-preview2-003121
+
+services:
+  - docker
+
+before_script:
+  - cd $TRAVIS_BUILD_DIR
+  - cd src
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - dotnet restore
+
+after_success:
+  - cd $TRAVIS_BUILD_DIR
+  - cd src
+  - dotnet build
+  - cd ..
+  - docker build -t "davecss/worker:latest" -t "davecss/worker:1.0.$TRAVIS_BUILD_NUMBER" .
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: docker push davecss/result
+  on:
+    branch: master

@@ -16,6 +16,7 @@ before_script:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 script:
+  - cd $TRAVIS_BUILD_DIR
   - cd src
   - dotnet publish -c Release -o ./worker ./ 
 
